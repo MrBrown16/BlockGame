@@ -2,16 +2,21 @@ package me.mrbrown.blockgame;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.ScreenUtils;
 
 public class BlockGame extends Game {
 	Screen screen;
+	Texture img;
+	MyColors colors;
 	
 	@Override
 	public void create () {
+		img = new Texture("transparent.png");
+		colors = new MyColors();
 		//create StartScreen
 		//Show StartScreen
-		screen = new ClassicGameScreen();
+		screen = new GameScreen(img);
 		setScreen(screen);
 	}
 

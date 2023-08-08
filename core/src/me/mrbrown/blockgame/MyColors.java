@@ -2,7 +2,7 @@ package me.mrbrown.blockgame;
 
 import com.badlogic.gdx.graphics.Color;
 
-public class Colors {
+public class MyColors {
     
     Color yellow = new Color(1, (float) 0.8, 0, 1);
     Color green = new Color(0, (float) 0.7, 0, 1);
@@ -18,7 +18,7 @@ public class Colors {
     Color[] colorList;
     
     
-    public Colors(){
+    public MyColors(){
         colorList = new Color[10];
         colorList[0] = red;
         colorList[1] = green;

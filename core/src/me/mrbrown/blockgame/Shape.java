@@ -4,350 +4,376 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
-public class Shape{
-    Array<Vector2> line; //shapes coordinates for each 1x1 block
+public class Shape {
+    Array<Vector2> positions; // shapes coordinates for each 1x1 block
     Color color;
-    //modell-ish class contains the logic to different shapes 
-    public Shape(int shapeversion, Vector2 pos, int rotation){
-        line = new Array<>(0);
-        switch (shapeversion){
+    Vector2 pos;
+
+    public Shape(int shapeversion, Vector2 pos, int rotation) {
+        this.pos = pos;
+        positions = new Array<>(0);
+        switch (shapeversion) {
             case 0:
-                straight(pos, rotation);
-                // color 
+                positions = place(straight(rotation), pos);
                 break;
             case 1:
-                block(pos, rotation);
+                positions = place(block(rotation), pos);
                 break;
             case 2:
-                lShape(pos, rotation);
+                positions = place(lShape(rotation), pos);
                 break;
             case 3:
-                backwardsLShape(pos, rotation);
+                positions = place(backwardsLShape(rotation), pos);
                 break;
             case 4:
-                zigzag(pos, rotation);
+                positions = place(zigzag(rotation), pos);
                 break;
             case 5:
-                backwardsZigzag(pos, rotation);
+                positions = place(backwardsZigzag(rotation), pos);
                 break;
             case 6:
-                tinyT(pos, rotation);
+                positions = place(tinyT(rotation), pos);
                 break;
             case 7:
-                tinyU(pos, rotation);
+                positions = place(tinyU(rotation), pos);
                 break;
             case 8:
-                longStaight(pos, rotation);
+                positions = place(longStaight(rotation),pos);
                 break;
 
         }
-        
+
     }
 
-    public Array<Vector2> straight(Vector2 pos, int rotation){
-        
+    private Array<Vector2> place(Array<Vector2> positions, Vector2 pos){
+        Array<Vector2> positionsUpdated = new Array<>(positions.size);
+        for (Vector2 pos1 : positions){
+            positionsUpdated.add(new Vector2(pos1.x + pos.x, pos1.y + pos.y));
+        }
+        return positionsUpdated;
+    }
+
+    public Array<Vector2> straight(int rotation) {
+        Array<Vector2> line = new Array<>(0);
         int rot = rotation % 2;
         switch (rot) {
-        case 0:
-            line = new Array<>(4);
-            for(int i = 0; i < 4; i++){
-                
-                line.add(new Vector2(pos.x, (pos.y + i * Consts.blockSize)));
-            }
-            break;
-        case 1:
-            line = new Array<>(4);
-            for(int i = (-2); i < 2; i++){
-                
-                line.add(new Vector2(pos.x + i * Consts.blockSize, pos.y));
-            }
-            break;
+            case 0:
+                line = new Array<>(4);
+                for (int i = 0; i < 4; i++) {
+
+                    line.add(new Vector2(0, i));
+                }
+                break;
+            case 1:
+                line = new Array<>(4);
+                for (int i = (-2); i < 2; i++) {
+
+                    line.add(new Vector2(i, 0));
+                }
+                break;
         }
         return line;
     }
-    public Array<Vector2> longStaight(Vector2 pos, int rotation){
+
+    public Array<Vector2> longStaight(int rotation) {
+        Array<Vector2> line = new Array<>(0);
         int rot = rotation % 2;
         switch (rot) {
-        case 0:
-            line = new Array<>(5);
-            for(int i = 0; i < 5; i++){
-                
-                line.add(new Vector2(pos.x, (pos.y + i * Consts.blockSize)));
-            }
-            break;
-        case 1:
-            line = new Array<>(5);
-            for(int i = (-2); i < 3; i++){
-                
-                line.add(new Vector2(pos.x + i * Consts.blockSize, pos.y));
-            }
-            break;
+            case 0:
+                line = new Array<>(5);
+                for (int i = 0; i < 5; i++) {
+
+                    line.add(new Vector2(0, (i)));
+                }
+                break;
+            case 1:
+                line = new Array<>(5);
+                for (int i = (-2); i < 3; i++) {
+
+                    line.add(new Vector2(i, 0));
+                }
+                break;
         }
         return line;
     }
-    public Array<Vector2> block(Vector2 pos, int rotation){
-        line = new Array<>(4);
 
-        line.add(new Vector2(pos.x -1 * Consts.blockSize, pos.y),
-             new Vector2(pos.x -1 * Consts.blockSize, pos.y + Consts.blockSize),
-             new Vector2(pos.x, pos.y),
-             new Vector2(pos.x, pos.y + Consts.blockSize));
+    public Array<Vector2> block(int rotation) {
+        Array<Vector2> line = new Array<>(4);
+
+        line.add(new Vector2(-1, 0),
+                new Vector2(-1, 1),
+                new Vector2(0, 0),
+                new Vector2(0, 1));
 
         return line;
     }
-    public Array<Vector2> lShape(Vector2 pos, int rotation){
+
+    public Array<Vector2> lShape(int rotation) {
+        Array<Vector2> line = new Array<>(0);
+
         int rot = rotation % 4;
         switch (rot) {
-        case 0:
-        line = new Array<>(4);
-            for(int i = 0; i < 3; i++){
-                
-                line.add(new Vector2(pos.x, (pos.y + i * Consts.blockSize)));
-            }
-            line.add(new Vector2(pos.x + Consts.blockSize, pos.y));
-            break;
-        case 1:
-            line = new Array<>(4);
-            for(int i = (-1); i < 2; i++){
-                
-                line.add(new Vector2(pos.x + i * Consts.blockSize, pos.y));
-            }
-            line.add(new Vector2((pos.x + Consts.blockSize), pos.y + Consts.blockSize));
-            break;
-        case 2:
-            line = new Array<>(4);
-            for(int i = 0; i < 3; i++){
-                
-                line.add(new Vector2(pos.x, (pos.y + i * Consts.blockSize)));
-            }
-            line.add(new Vector2(pos.x -1 * Consts.blockSize, pos.y + 2 *  Consts.blockSize));
-            break;
-        case 3:
-            line = new Array<>(4);
-            for(int i = (-1); i < 2; i++){
-                
-                line.add(new Vector2(pos.x + i * Consts.blockSize, pos.y + Consts.blockSize));
-            }
-            line.add(new Vector2(pos.x -1 * Consts.blockSize, pos.y));
-            break;
-        
-        }
-        
-        return line;
-    }
-    
-    
-    public Array<Vector2> backwardsLShape(Vector2 pos, int rotation){
-        int rot = rotation % 4;
+            case 0:
+                line = new Array<>(4);
+                for (int i = 0; i < 3; i++) {
 
-        switch (rot) {
-        case 0:
-        line = new Array<>(4);
-            for(int i = 0; i < 3; i++){
-                
-                line.add(new Vector2(pos.x, pos.y + i * Consts.blockSize));
-            }
-            line.add(new Vector2(pos.x -1 * Consts.blockSize, pos.y));
-            break;
-        case 1:
-            line = new Array<>(4);
-            for(int i = (-1); i < 2; i++){
-                
-                line.add(new Vector2(pos.x + i * Consts.blockSize, pos.y + Consts.blockSize));
-            }
-            line.add(new Vector2(pos.x + Consts.blockSize, pos.y));
-            break;
-        case 2:
-            line = new Array<>(4);
-            for(int i = 0; i < 3; i++){
-                
-                line.add(new Vector2(pos.x, pos.y + i * Consts.blockSize));
-            }
-            line.add(new Vector2(pos.x + Consts.blockSize, pos.y + 2 *  Consts.blockSize));
-            break;
-        case 3:
-            line = new Array<>(4);
-            for(int i = (-1); i < 2; i++){
-                
-                line.add(new Vector2(pos.x + i * Consts.blockSize, pos.y));
-            }
-            line.add(new Vector2(pos.x -1 * Consts.blockSize, pos.y + Consts.blockSize));
-            break;
-        
+                    line.add(new Vector2(0, i));
+                }
+                line.add(new Vector2(1, 0));
+                break;
+            case 1:
+                line = new Array<>(4);
+                for (int i = -1; i < 2; i++) {
+
+                    line.add(new Vector2(i, 0));
+                }
+                line.add(new Vector2(1, 1));
+                break;
+            case 2:
+                line = new Array<>(4);
+                for (int i = 0; i < 3; i++) {
+
+                    line.add(new Vector2(0, i));
+                }
+                line.add(new Vector2(-1, 2));
+                break;
+            case 3:
+                line = new Array<>(4);
+                for (int i = -1; i < 2; i++) {
+
+                    line.add(new Vector2(i, 1));
+                }
+                line.add(new Vector2(-1, 0));
+                break;
+
         }
-        
+
         return line;
     }
 
-    public Array<Vector2> zigzag(Vector2 pos, int rotation){
-        int rot = rotation % 4;
-        switch (rot) {
-        case 0:
-            line = new Array<>(4);
+    public Array<Vector2> backwardsLShape(int rotation) {
+        Array<Vector2> line = new Array<>(0);
 
-            line.add(new Vector2(pos.x -1 * Consts.blockSize, pos.y),
-                 new Vector2(pos.x, pos.y),
-                 new Vector2(pos.x, pos.y + Consts.blockSize),
-                 new Vector2(pos.x + Consts.blockSize, pos.y + Consts.blockSize));
-
-            break;
-
-        case 1:
-            line = new Array<>(4);
-
-            line.add(new Vector2(pos.x -1 * Consts.blockSize, pos.y + 2 * Consts.blockSize),
-                 new Vector2(pos.x -1 * Consts.blockSize, pos.y + Consts.blockSize),
-                 new Vector2(pos.x, pos.y + Consts.blockSize),
-                 new Vector2(pos.x, pos.y));
-            
-            break;
-        case 2:
-            line = new Array<>(4);
-
-            line.add(new Vector2(pos.x -1 * Consts.blockSize, pos.y),
-                 new Vector2(pos.x, pos.y),
-                 new Vector2(pos.x, pos.y + Consts.blockSize),
-                 new Vector2(pos.x + Consts.blockSize, pos.y + Consts.blockSize));
-
-            break;
-
-        case 3:
-            line = new Array<>(4);
-
-            line.add(new Vector2(pos.x, pos.y + 2 * Consts.blockSize),
-                 new Vector2(pos.x, pos.y + Consts.blockSize),
-                 new Vector2(pos.x + 1 * Consts.blockSize, pos.y + Consts.blockSize),
-                 new Vector2(pos.x + 1 * Consts.blockSize, pos.y));
-            
-            break;
-        }
-        return line;
-    }
-        public Array<Vector2> backwardsZigzag(Vector2 pos, int rotation){
-        int rot = rotation % 4;
-        switch (rot) {
-        case 0:
-            line = new Array<>(4);
-
-            line.add(new Vector2(pos.x -1 * Consts.blockSize, pos.y + Consts.blockSize),
-                 new Vector2(pos.x, pos.y + Consts.blockSize),
-                 new Vector2(pos.x, pos.y),
-                 new Vector2(pos.x + Consts.blockSize, pos.y));
-
-            break;
-        case 1:
-            line = new Array<>(4);
-
-            line.add(new Vector2(pos.x -1 * Consts.blockSize, pos.y),
-                 new Vector2(pos.x -1 * Consts.blockSize, pos.y + Consts.blockSize),
-                 new Vector2(pos.x , pos.y + Consts.blockSize),
-                 new Vector2(pos.x, pos.y + 2 * Consts.blockSize));
-
-            break;
-        case 2:
-            line = new Array<>(4);
-
-            line.add(new Vector2(pos.x -1 * Consts.blockSize, pos.y + Consts.blockSize),
-                 new Vector2(pos.x, pos.y + Consts.blockSize),
-                 new Vector2(pos.x, pos.y),
-                 new Vector2(pos.x + Consts.blockSize, pos.y));
-
-            break;
-        case 3:
-            line = new Array<>(4);
-
-            line.add(new Vector2(pos.x, pos.y),
-                 new Vector2(pos.x, pos.y + Consts.blockSize),
-                 new Vector2(pos.x + 1 * Consts.blockSize, pos.y + Consts.blockSize),
-                 new Vector2(pos.x + 1 * Consts.blockSize, pos.y + 2 * Consts.blockSize));
-
-            break;
-        }
-        return line;
-    }
-
-    public Array<Vector2> tinyT(Vector2 pos, int rotation){
         int rot = rotation % 4;
 
         switch (rot) {
-        case 0:
-        line = new Array<>(4);
-            for(int i = -1; i < 2; i++){
-                
-                line.add(new Vector2(pos.x + i * Consts.blockSize, pos.y + Consts.blockSize));
-            }
-            line.add(new Vector2(pos.x, pos.y));
-            break;
-        case 1:
-            line = new Array<>(4);
-            for(int i = 0; i < 3; i++){
-                
-                line.add(new Vector2(pos.x, (pos.y + i * Consts.blockSize)));
-            }
-            line.add(new Vector2(pos.x -1 * Consts.blockSize, pos.y +  Consts.blockSize));
-            
-            break;
-        case 2:
-            line = new Array<>(4);
-            for(int i = (-1); i < 2; i++){
-                
-                line.add(new Vector2(pos.x + i * Consts.blockSize, pos.y));
-            }
-            line.add(new Vector2(pos.x, pos.y + Consts.blockSize));
-            break;
-        case 3:
-            line = new Array<>(4);
-            for(int i = (0); i < 3; i++){
-                
-                line.add(new Vector2(pos.x, pos.y + i * Consts.blockSize));
-            }
-            line.add(new Vector2(pos.x + Consts.blockSize, pos.y + Consts.blockSize));
-            break;
-        
+            case 0:
+                line = new Array<>(4);
+                for (int i = 0; i < 3; i++) {
+
+                    line.add(new Vector2(0, i));
+                }
+                line.add(new Vector2(-1, 0));
+                break;
+            case 1:
+                line = new Array<>(4);
+                for (int i = -1; i < 2; i++) {
+
+                    line.add(new Vector2(i, 1));
+                }
+                line.add(new Vector2(1, 0));
+                break;
+            case 2:
+                line = new Array<>(4);
+                for (int i = 0; i < 3; i++) {
+
+                    line.add(new Vector2(0, i));
+                }
+                line.add(new Vector2(1, 2));
+                break;
+            case 3:
+                line = new Array<>(4);
+                for (int i = -1; i < 2; i++) {
+
+                    line.add(new Vector2(i, 0));
+                }
+                line.add(new Vector2(-1, 1));
+                break;
+
         }
-        
+
         return line;
     }
-    public Array<Vector2> tinyU(Vector2 pos, int rotation){
+
+    public Array<Vector2> zigzag(int rotation) {
+        Array<Vector2> line = new Array<>(0);
+
+        int rot = rotation % 4;
+        switch (rot) {
+            case 0:
+                line = new Array<>(4);
+
+                line.add(new Vector2(-1, 0),
+                        new Vector2(0, 0),
+                        new Vector2(0, 1),
+                        new Vector2(1, 1));
+
+                break;
+
+            case 1:
+                line = new Array<>(4);
+
+                line.add(new Vector2(-1, 2),
+                        new Vector2(-1, 1),
+                        new Vector2(0, 1),
+                        new Vector2(0, 0));
+
+                break;
+            case 2:
+                line = new Array<>(4);
+
+                line.add(new Vector2(-1, 0),
+                        new Vector2(0, 0),
+                        new Vector2(0, 1),
+                        new Vector2(1, 1));
+
+                break;
+
+            case 3:
+                line = new Array<>(4);
+
+                line.add(new Vector2(0, 2),
+                        new Vector2(0, 1),
+                        new Vector2(1, 1),
+                        new Vector2(1, 0));
+
+                break;
+        }
+        return line;
+    }
+
+    public Array<Vector2> backwardsZigzag(int rotation) {
+        Array<Vector2> line = new Array<>(0);
+
+        int rot = rotation % 4;
+        switch (rot) {
+            case 0:
+                line = new Array<>(4);
+
+                line.add(new Vector2(-1, 1),
+                        new Vector2(0, 1),
+                        new Vector2(0, 0),
+                        new Vector2(1, 0));
+
+                break;
+            case 1:
+                line = new Array<>(4);
+
+                line.add(new Vector2(-1, 0),
+                        new Vector2(-1, 1),
+                        new Vector2(0, 1),
+                        new Vector2(0, 2));
+
+                break;
+            case 2:
+                line = new Array<>(4);
+
+                line.add(new Vector2(-1, 1),
+                        new Vector2(0, 1),
+                        new Vector2(0, 0),
+                        new Vector2(1, 0));
+
+                break;
+            case 3:
+                line = new Array<>(4);
+
+                line.add(new Vector2(0, 0),
+                        new Vector2(0, 1),
+                        new Vector2(1, 1),
+                        new Vector2(1, 2));
+
+                break;
+        }
+        return line;
+    }
+
+    public Array<Vector2> tinyT(int rotation) {
+        Array<Vector2> line = new Array<>(0);
+
         int rot = rotation % 4;
 
         switch (rot) {
-        case 0:
-            line = new Array<>(5);
-            for(int i = (-1); i < 2; i++){
-                
-                line.add(new Vector2(pos.x + i * Consts.blockSize, pos.y));
-            }
-            line.add(new Vector2(pos.x -1 * Consts.blockSize, pos.y + Consts.blockSize), new Vector2(pos.x + Consts.blockSize, pos.y + Consts.blockSize));
-            break;
-        case 1:
-            line = new Array<>(5);
-            for(int i = 0; i < 3; i++){
-                
-                line.add(new Vector2(pos.x, pos.y + i * Consts.blockSize));
-            }
-            line.add(new Vector2(pos.x -1 * Consts.blockSize, pos.y), new Vector2(pos.x -1 * Consts.blockSize, pos.y + 2 * Consts.blockSize));
-            
-            break;
-        case 2:
-            line = new Array<>(5);
-            for(int i = -1; i < 2; i++){
-                
-                line.add(new Vector2(pos.x + i * Consts.blockSize, pos.y + Consts.blockSize));
-            }
-            line.add(new Vector2(pos.x -1 * Consts.blockSize, pos.y), new Vector2(pos.x + Consts.blockSize, pos.y));
-            break;
-        case 3:
-            line = new Array<>(5);
-            for(int i = (0); i < 3; i++){
-                
-                line.add(new Vector2(pos.x, pos.y + i * Consts.blockSize));
-            }
-            line.add(new Vector2(pos.x + Consts.blockSize, pos.y), new Vector2(pos.x + Consts.blockSize, pos.y + 2 * Consts.blockSize));
-            break;
-        
+            case 0:
+                line = new Array<>(4);
+                for (int i = -1; i < 2; i++) {
+
+                    line.add(new Vector2(i, 1));
+                }
+                line.add(new Vector2(0, 0));
+                break;
+            case 1:
+                line = new Array<>(4);
+                for (int i = 0; i < 3; i++) {
+
+                    line.add(new Vector2(0, i));
+                }
+                line.add(new Vector2(-1, 1));
+
+                break;
+            case 2:
+                line = new Array<>(4);
+                for (int i = -1; i < 2; i++) {
+
+                    line.add(new Vector2(i, 0));
+                }
+                line.add(new Vector2(0, 1));
+                break;
+            case 3:
+                line = new Array<>(4);
+                for (int i = (0); i < 3; i++) {
+
+                    line.add(new Vector2(0, i));
+                }
+                line.add(new Vector2(1, 1));
+                break;
+
         }
-        
+
+        return line;
+    }
+
+    public Array<Vector2> tinyU(int rotation) {
+        Array<Vector2> line = new Array<>(0);
+
+        int rot = rotation % 4;
+
+        switch (rot) {
+            case 0:
+                line = new Array<>(5);
+                for (int i = -1; i < 2; i++) {
+
+                    line.add(new Vector2(i, 0));
+                }
+                line.add(new Vector2(-1, 1), new Vector2(1, 1));
+                break;
+            case 1:
+                line = new Array<>(5);
+                for (int i = 0; i < 3; i++) {
+
+                    line.add(new Vector2(0, i));
+                }
+                line.add(new Vector2(-1, 0), new Vector2(-1, 2));
+
+                break;
+            case 2:
+                line = new Array<>(5);
+                for (int i = -1; i < 2; i++) {
+
+                    line.add(new Vector2(i, 1));
+                }
+                line.add(new Vector2(-1, 0), new Vector2(1, 0));
+                break;
+            case 3:
+                line = new Array<>(5);
+                for (int i = (0); i < 3; i++) {
+
+                    line.add(new Vector2(0, i));
+                }
+                line.add(new Vector2(1, 0), new Vector2(1, 2));
+                break;
+
+        }
+
         return line;
     }
 

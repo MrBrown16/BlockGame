@@ -2,7 +2,6 @@ package me.mrbrown.blockgame;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 public class Blocks {
@@ -27,7 +26,7 @@ public class Blocks {
 
     public Blocks(Texture img) {
         this.img = img;
-        currentShape.block(new Vector2(0, 0), 0);
+        currentShape.block( 0);
     }
 
 }
