@@ -9,20 +9,22 @@ public class BlockGame extends Game {
 	Screen screen;
 	Texture img;
 	MyColors colors;
+	GameModel model;
 	
 	@Override
 	public void create () {
 		img = new Texture("transparent.png");
 		colors = new MyColors();
+		model = new GameModel();
 		//create StartScreen
 		//Show StartScreen
-		screen = new GameScreen(img);
+		screen = new GameScreen(img, colors, model);
 		setScreen(screen);
 	}
 
 	@Override
 	public void dispose () {
-		
+		img.dispose();		
 	}
 
     @Override

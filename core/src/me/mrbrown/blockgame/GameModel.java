@@ -1,5 +1,7 @@
 package me.mrbrown.blockgame;
 
+import com.badlogic.gdx.utils.Array;
+
 public class GameModel {
     
     //table contains the table and all the blocks are represented by ints -1 = empty space
@@ -46,7 +48,7 @@ public class GameModel {
             return false;
         }else if (table[y][x] > -1){
             //Occupied space, there is a Collision
-            System.out.println("occupied x : " + x + " y: " + y);
+            // System.out.println("occupied x : " + x + " y: " + y);
             return true;
         }else{
             //there shouldn't be an else
@@ -60,7 +62,6 @@ public class GameModel {
         if (y > 0){
             return check(x, y-1);
         }
-        System.out.println("checkBellow");
         return true;
     }
     public boolean checkLeft(int x, int y){ //true = collision
@@ -80,8 +81,11 @@ public class GameModel {
     }
 
     public void checkFinRows(int startRowIndex){ //tmpfull = true -> row is full
-        boolean tmpempty = true; // true = all -1 no need to propagate
-        boolean tmpfull = true; // starts with true but one empty cell sets it to false
+        boolean tmpempty; // true = all -1 no need to propagate
+        boolean tmpfull; // starts with true but one empty cell sets it to false
+        Array<Integer> fullRows = new Array<>(Consts.maxRowsCompletedByOneShape);
+        int emptyRow = Consts.boardHeight-1;
+        int counter = 0;
         for (int i = startRowIndex; i < Consts.boardHeight; i++){
             tmpfull = true;
             tmpempty = true;
@@ -89,42 +93,53 @@ public class GameModel {
             for (int j = 0; j < Consts.boardWidth; j++){
                 if (table[i][j] == -1){
                     tmpfull = false;//should do nothing
-                    // System.out.println("==-1 i: " + i + " j: " + j);
                 }else if (table[i][j] > -1){
                     tmpempty = false;
-                    // tmpfull = true; //copy higher i rows to one lower starting i+1 -> i 
                 }
-                System.out.println(" i: " + i + " j: " + j);
+                counter++;
             }
-            if (tmpfull) {
-                // for (int k = i; k < Consts.boardHeight-1; k++){
-                //     System.out.println("not-1 i: " + i + " k: " + k);
-                //     System.out.println(k);
-                //     copyRows(k);
-                // }
-                System.out.println("tmpfull: " + tmpfull);
-                copyRows(i);
-                checkFinRows(i);
+            if (tmpfull) { // row is full, copies i+1 indexed row to present and checks for other full rows 
+                fullRows.add(i);
+                counter++;
             }
             if (tmpempty) {
-                System.out.println("empty: " + tmpempty);
-                break;
-                
+                if (emptyRow > i) {
+                    emptyRow = i;
+                    counter++;
+                }
+                break;       
             }
         }
+        for (int i : fullRows){
+            counter += copyRows(i, emptyRow);
+        }
+        // System.out.println(" counter at the End: " + counter);
+        // return false;
     }
 
-    private void copyRows(int rowIndex){
-        System.out.println(rowIndex);
-        if (rowIndex < Consts.boardHeight) {
-            for (int j = 0; j < Consts.boardHeight-rowIndex-1; j++){
-                for (int i = 0; i < Consts.boardWidth; i++){
-                    table[rowIndex+j][i] = table[rowIndex+1+j][i];
+    private int copyRows(int rowIndex, int maxRow){
+        // System.out.println( " 109 " + " rowindex: " + rowIndex + " maxRow: " + maxRow);
+        int counter = 0;
+        // if (rowIndex < Consts.boardHeight) {
+            for (int j = 0; j < maxRow; j++){
+                if(rowIndex+j+1 < Consts.boardHeight){
+                    for (int i = 0; i < Consts.boardWidth; i++){
+                        table[rowIndex+j][i] = table[rowIndex+1+j][i];
+                        // System.out.println(" row Copied: " + (rowIndex+j));
+                        counter++;
+                    }
                 }
+                // else{
+                //     System.out.println("ERROR too big rows tried to be accessed");
+                //     counter++;
+                //     break;
+                // }
             }
-        }else{
-            //TODO: lost screen
-        }
+            // System.out.println(" counter: " + counter);
+        // }else{
+        //     //TODO: lost screen
+        // }
+        return counter;
     }
 
     public void printTable(){

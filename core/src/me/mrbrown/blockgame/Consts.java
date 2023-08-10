@@ -7,9 +7,13 @@ public class Consts {
     public static int boardWidth = 11;
     public static int boardHeight = 23;
     public static int[] checkablePositions = {1,-1,2,-2,3};
+    public static int[] nextPositions = {3, 10, 17};
     public static int in = 0;
     public static int bellow = 1;
     public static int left = 2;
     public static int right = 3;
+    public static int speed = 1;
+    public static int maxRowsCompletedByOneShape = 5;
+
     //game modes Enum
 }

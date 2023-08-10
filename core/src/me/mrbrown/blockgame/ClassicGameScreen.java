@@ -200,7 +200,6 @@ public class ClassicGameScreen extends ScreenAdapter{
             System.out.println(pos.x + " : " + pos.y/ Consts.blockSize);
             System.out.println(x + " : " + y);
             model.addBlock(y, x, shapeint);
-            model.printTable();
         }
     }
     

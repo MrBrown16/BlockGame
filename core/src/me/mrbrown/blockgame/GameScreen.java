@@ -21,25 +21,59 @@ public class GameScreen extends ScreenAdapter {
     Texture img;
     Vector2 intpos; // position x and y in the Consts.boardHeight * Consts.boardWidth board
     Vector2 pos; // same as intpos, just updated each render call, y coordinate can be float
-    int shapeInt, rotation, speed;
+    int shapeInt, rotation, speed, shapesIndex;
+    int[] nextShapes = new int[3];
     float time;
     float timer;
     
-    public GameScreen(Texture img) {
+    public GameScreen(Texture img, MyColors colors, GameModel model) {
         batch = new SpriteBatch();
         this.img = img;
+        this.model = model;
+        this.colors = colors;
         random = new Random();
-        model = new GameModel();
-        colors = new MyColors();
-        speed = 1;
+        speed = Consts.speed;
         timer = 0;
+        fillNextShapes();
+        shapesIndex = 0;
         chooseRandomShape();
         pos = intpos;
         getCurrentShape();
     }
 
+    @Override
+    public void dispose() {
+        img.dispose();
+        batch.dispose();
+        super.dispose();
+    }
+
+    @Override
+    public void pause() {
+        // TODO Auto-generated method stub
+        //TODO: Pause Screen
+        //TODO: input listening for resume
+        super.pause();
+    }
+
+    @Override
+    public void resize(int width, int height) {
+        // TODO Auto-generated method stub
+        //TODO: figure out sizing
+        super.resize(width, height);
+    }
+
+    private void fillNextShapes() {
+        for (int i = 0; i < 3; i++){
+            nextShapes[i] = random.nextInt(9);
+            
+        }
+    }
+
     public void chooseRandomShape() { // resets the falling shape's attributes
-        shapeInt = random.nextInt(9);
+        shapeInt = nextShapes[shapesIndex%3];
+        nextShapes[shapesIndex%3] = random.nextInt(9);
+        shapesIndex++;
         rotation = 0;
         intpos = new Vector2((int) (Consts.boardWidth / 2), Consts.boardHeight); // initial position of falling shapes
     }
@@ -60,7 +94,7 @@ public class GameScreen extends ScreenAdapter {
 
     private void saveFallenShape() {
         for (Vector2 pos : currentShape.positions) {
-            System.out.println("x: " + pos.x + " y: " + pos.y);
+            // System.out.println("x: " + pos.x + " y: " + pos.y);
             model.addBlock((int) pos.y, (int) pos.x, shapeInt);
         }
         model.checkFinRows(0);
@@ -77,9 +111,26 @@ public class GameScreen extends ScreenAdapter {
         batch.setColor(1, 1, 1, 1);
         batch.end();
     }
+    public void drawNextShapes() {
+        int counter = shapesIndex;
+        for (int i : nextShapes){
+            counter++;
+            System.out.println(" i: " + i + " counter: " + counter);
+            Shape tmpShape = new Shape(i, new Vector2(Consts.boardWidth+2, Consts.nextPositions[counter%3] ), 0);
+            Array<Vector2> coords = tmpShape.positions;
+            batch.begin();
+            batch.setColor(colors.getColor(i));
+            for (Vector2 coord : coords) {
+                batch.draw(img, coord.x * Consts.blockSize, coord.y * Consts.blockSize, Consts.blockSize, Consts.blockSize);
+            }
+            batch.setColor(1, 1, 1, 1);
+            batch.end();
+        }
+    }
 
     @Override
     public void render(float delta) {
+        
         getCurrentShape();
         handleEvents(delta);
         ScreenUtils.clear(0, 0, 1, 1);
@@ -87,6 +138,7 @@ public class GameScreen extends ScreenAdapter {
         createBoard();
         shapeFalling(delta);
         drawShape();
+        // drawNextShapes(); not working
     }
 
     public void createBoard() { // later maybe give access to users to set width and height
@@ -171,9 +223,9 @@ public class GameScreen extends ScreenAdapter {
 
     public void lower() { // accelerates the shape's descend
         if (Gdx.input.isKeyPressed(Input.Keys.DPAD_DOWN)) {
-            speed = 12;
+            speed = 12 * Consts.speed;
         } else {
-            speed = 1;
+            speed = Consts.speed;
         }
     }
 
@@ -198,6 +250,7 @@ public class GameScreen extends ScreenAdapter {
         choseShape();
         move(delta);
         lower();
+        //TODO: pauseInput listening
     }
 
     private boolean check(Shape shape, int mode) {
